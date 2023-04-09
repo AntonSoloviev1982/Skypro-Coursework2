@@ -44,88 +44,88 @@ public class TaskService {
         System.out.println("Была удалена задача c id: " + id);
     }
 
-    public Set<Task> getAllByData(LocalDate localDate) {
-        Set<Task> tasks = new HashSet<>();
-        for (Task task : taskMap.values()) {
-            System.out.println(task.getRepeatability());
-            switch (task.getRepeatability()) {
-                case ОДНОКРАТНАЯ:
-                    Taskable oneTimeTask = new OneTimeTask();
-                    if (oneTimeTask.appearsIn(localDate)) {
-                        tasks.add(task);
-                    }
-                    break;
-                case ЕЖЕДНЕВНАЯ:
-                    Taskable dailyTask = new DailyTask();
-                    if (dailyTask.appearsIn(localDate)) {
-                        tasks.add(task);
-                    }
-                    break;
-                case ЕЖЕНЕДЕЛЬНАЯ:
-                    Taskable weeklyTask = new WeeklyTask();
-                    if (weeklyTask.appearsIn(localDate)) {
-                        tasks.add(task);
-                    }
-                    break;
-                case ЕЖЕМЕСЯЧНАЯ:
-                    Taskable monthlyTask = new MonthlyTask();
-                    if (monthlyTask.appearsIn(localDate)) {
-                        tasks.add(task);
-                    }
-                    break;
-                case ЕЖЕГОДНАЯ:
-                    Taskable yearlyTask = new YearlyTask();
-                    if (yearlyTask.appearsIn(localDate)) {
-                        tasks.add(task);
-                    }
-                    break;
-
-            }
-        }
-        return tasks;
-    }
-
-//    public Collection<Task> getAllByData(LocalDate localDate) {
-//        Collection<Task> tasks = new HashSet<>();
+//    public Set<Task> getAllByData(LocalDate localDate) {
+//        Set<Task> tasks = new HashSet<>();
 //        for (Task task : taskMap.values()) {
+//            System.out.println(task.getRepeatability());
 //            switch (task.getRepeatability()) {
 //                case ОДНОКРАТНАЯ:
-////                    OneTimeTask oneTimeTask = new OneTimeTask();
-//                    if (oneTimeTaskAppearsIn(localDate)) {
+//                    Taskable oneTimeTask = new OneTimeTask();
+//                    if (oneTimeTask.appearsIn(localDate)) {
 //                        tasks.add(task);
 //                    }
 //                    break;
 //                case ЕЖЕДНЕВНАЯ:
-////                    DailyTask dailyTask = new DailyTask();
-//                    if (dailyTaskAppearsIn(localDate)) {
+//                    Taskable dailyTask = new DailyTask();
+//                    if (dailyTask.appearsIn(localDate)) {
 //                        tasks.add(task);
 //                    }
 //                    break;
 //                case ЕЖЕНЕДЕЛЬНАЯ:
-////                    WeeklyTask weeklyTask = new WeeklyTask();
-//                    if (weeklyTaskAppearsIn(localDate)) {
+//                    Taskable weeklyTask = new WeeklyTask();
+//                    if (weeklyTask.appearsIn(localDate)) {
 //                        tasks.add(task);
 //                    }
 //                    break;
 //                case ЕЖЕМЕСЯЧНАЯ:
-////                    MonthlyTask monthlyTask = new MonthlyTask();
-//                    if (monthlyTaskAppearsIn(localDate)) {
+//                    Taskable monthlyTask = new MonthlyTask();
+//                    if (monthlyTask.appearsIn(localDate)) {
 //                        tasks.add(task);
 //                    }
 //                    break;
 //                case ЕЖЕГОДНАЯ:
-////                    YearlyTask yearlyTask = new YearlyTask();
-//                    if (yearlyTaskAppearsIn(localDate)) {
+//                    Taskable yearlyTask = new YearlyTask();
+//                    if (yearlyTask.appearsIn(localDate)) {
 //                        tasks.add(task);
 //                    }
 //                    break;
+//
 //            }
-//        }
-//        if (tasks.isEmpty()) {
-//            throw new TaskNotFoundException("На " + localDate + " задач не запланировано!");
 //        }
 //        return tasks;
 //    }
+
+    public Collection<Task> getAllByData(LocalDate localDate) {
+        Collection<Task> tasks = new HashSet<>();
+        for (Task task : taskMap.values()) {
+            switch (task.getRepeatability()) {
+                case ОДНОКРАТНАЯ:
+//                    OneTimeTask oneTimeTask = new OneTimeTask();
+                    if (oneTimeTaskAppearsIn(localDate)) {
+                        tasks.add(task);
+                    }
+                    break;
+                case ЕЖЕДНЕВНАЯ:
+//                    DailyTask dailyTask = new DailyTask();
+                    if (dailyTaskAppearsIn(localDate)) {
+                        tasks.add(task);
+                    }
+                    break;
+                case ЕЖЕНЕДЕЛЬНАЯ:
+//                    WeeklyTask weeklyTask = new WeeklyTask();
+                    if (weeklyTaskAppearsIn(localDate)) {
+                        tasks.add(task);
+                    }
+                    break;
+                case ЕЖЕМЕСЯЧНАЯ:
+//                    MonthlyTask monthlyTask = new MonthlyTask();
+                    if (monthlyTaskAppearsIn(localDate)) {
+                        tasks.add(task);
+                    }
+                    break;
+                case ЕЖЕГОДНАЯ:
+//                    YearlyTask yearlyTask = new YearlyTask();
+                    if (yearlyTaskAppearsIn(localDate)) {
+                        tasks.add(task);
+                    }
+                    break;
+            }
+        }
+        if (tasks.isEmpty()) {
+            throw new TaskNotFoundException("На " + localDate + " задач не запланировано!");
+        }
+        return tasks;
+    }
 
     public Collection<Task> getRemovedTasks() {
         return removedTasks;
@@ -156,7 +156,11 @@ public class TaskService {
         LocalDate startDate = LocalDate.now();
         LocalDate endDate = LocalDate.of(2023, 12, 31);
             for (int i = 0; i < endDate.getDayOfYear() - startDate.getDayOfYear(); i++) {
-                allTasksByData = getAllByData(startDate.plusDays(i));
+                try {
+                    allTasksByData = getAllByData(startDate.plusDays(i));
+                } catch (TaskNotFoundException e) {
+                    continue;
+                }
                 if (!allTasksByData.isEmpty()) {
                     allGroupByData.put(startDate.plusDays(i), allTasksByData);
                 }
