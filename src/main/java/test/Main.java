@@ -17,7 +17,7 @@ public class Main {
 
         service.printTaskMap();
 
-        System.out.println("getAllByData" + service.getAllByData(LocalDate.of(2023, 5, 6)));
+        System.out.println("getAllByData" + service.getAllByData(LocalDate.of(2023, 5, 2)));
 
         service.updateTitle(1);
         service.updateDescription(1);
