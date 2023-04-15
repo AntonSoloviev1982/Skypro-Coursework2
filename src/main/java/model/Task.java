@@ -70,6 +70,7 @@ public class Task {
     @Override
     public String toString() {
         return "Task{" +
+                "id='" + id + '\'' +
                 "title='" + title + '\'' +
                 ", repeatability=" + repeatability +
                 ", description='" + description + '\'' +

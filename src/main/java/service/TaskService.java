@@ -13,29 +13,40 @@ public class TaskService {
     private final List<Task> removedTasks = new ArrayList<>();
 
 
-    public Map<Integer, Task> getTaskMap() {
-        return taskMap;
-    }
 
-
-
-    public void add(RepeatabilityEnum repeatability, TypeEnum type) {
-        Scanner scanner = new Scanner(System.in);
+    public void add(Scanner scanner) {
         System.out.println("Введите заголовок:");
-        String title = scanner.nextLine();
+        String title = scanner.next();
+        System.out.println("Введите повторяемость:");
+        RepeatabilityEnum repeatability;
+        try {
+            repeatability = RepeatabilityEnum.valueOf(scanner.next());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Нужно указать один из вариантов повторяемости : " +
+                    "ONETIME, DAILY, WEEKLY, MONTHLY, YEARLY");
+        }
         System.out.println("Введите описание:");
-        String description = scanner.nextLine();
+        String description = scanner.next();
+        System.out.println("Введите тип:");
+        TypeEnum type;
+        try {
+            type = TypeEnum.valueOf(scanner.next());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Нужно указать один из двух типов задач: PERSONAL, WORK");
+        }
         Task newTask = new Task(
                 title,
                 repeatability,
                 description,
                 type);
         taskMap.put(newTask.getId(), newTask);
-//        scanner.close();
+        System.out.println(newTask);
     }
 
 
-    public void remove(int id) {
+    public void remove(Scanner scanner) {
+        System.out.println("Введите id");
+        int id = scanner.nextInt();
         if (taskMap.containsKey(id)) {
             removedTasks.add(taskMap.get(id));
             taskMap.remove(id);
@@ -45,35 +56,38 @@ public class TaskService {
         System.out.println("Была удалена задача c id: " + id);
     }
 
-    public Set<Task> getAllByData(LocalDate localDate) {
+    public Set<Task> getAllByDay(LocalDate localDate) {
+        System.out.println("Введите дату в формате YYYY-MM-DD");
+//        String date = scanner.next();
+//        LocalDate localDate = LocalDate.parse(date);
         Set<Task> tasks = new HashSet<>();
         for (Task task : taskMap.values()) {
             switch (task.getRepeatability()) {
-                case ОДНОКРАТНАЯ:
+                case ONETIME:
                     Taskable oneTimeTask = new OneTimeTask();
                     if (oneTimeTask.appearsIn(localDate, task)) {
                         tasks.add(task);
                     }
                     break;
-                case ЕЖЕДНЕВНАЯ:
+                case DAILY:
                     Taskable dailyTask = new DailyTask();
                     if (dailyTask.appearsIn(localDate, task)) {
                         tasks.add(task);
                     }
                     break;
-                case ЕЖЕНЕДЕЛЬНАЯ:
+                case WEEKLY:
                     Taskable weeklyTask = new WeeklyTask();
                     if (weeklyTask.appearsIn(localDate, task)) {
                         tasks.add(task);
                     }
                     break;
-                case ЕЖЕМЕСЯЧНАЯ:
+                case MONTHLY:
                     Taskable monthlyTask = new MonthlyTask();
                     if (monthlyTask.appearsIn(localDate, task)) {
                         tasks.add(task);
                     }
                     break;
-                case ЕЖЕГОДНАЯ:
+                case YEARLY:
                     Taskable yearlyTask = new YearlyTask();
                     if (yearlyTask.appearsIn(localDate, task)) {
                         tasks.add(task);
@@ -85,28 +99,35 @@ public class TaskService {
         if (tasks.isEmpty()) {
             throw new TaskNotFoundException("На " + localDate + " задач не запланировано!");
         }
+        System.out.println("На " + localDate + " запланированы задачи: \n" + tasks);
         return tasks;
     }
 
 
     public Collection<Task> getRemovedTasks() {
+        if (removedTasks.isEmpty()) {
+            throw new TaskNotFoundException("Удаленные задачи отсутствуют.");
+        }
+        System.out.println("Список удаленных задач: \n" + removedTasks);
         return removedTasks;
     }
 
 
-    public void updateDescription(int id) {
-        Scanner scanner = new Scanner(System.in);
+    public void updateDescription(Scanner scanner) {
+        System.out.println("Введите id");
+        int id = scanner.nextInt();
         System.out.println("Введите новое описание для задачи id: " + id);
-        String newDescription = scanner.nextLine();
+        String newDescription = scanner.next();
         if (taskMap.containsKey(id)) {
             taskMap.get(id).setDescription(newDescription);
         }
     }
 
-    public void updateTitle(int id) {
-        Scanner scanner = new Scanner(System.in);
+    public void updateTitle(Scanner scanner) {
+        System.out.println("Введите id");
+        int id = scanner.nextInt();
         System.out.println("Введите новый заголовок для задачи id: " + id);
-        String newTitle = scanner.nextLine();
+        String newTitle = scanner.next();
         if (taskMap.containsKey(id)) {
             taskMap.get(id).setTitle(newTitle);
         }
@@ -119,7 +140,7 @@ public class TaskService {
         LocalDate endDate = LocalDate.of(2023, 12, 31);
             for (int i = 0; i < endDate.getDayOfYear() - startDate.getDayOfYear(); i++) {
                 try {
-                    allTasksByData = getAllByData(startDate.plusDays(i));
+                    allTasksByData = getAllByDay(startDate.plusDays(i));
                 } catch (TaskNotFoundException e) {
                     continue;
                 }
@@ -133,21 +154,10 @@ public class TaskService {
         return allGroupByData;
     }
 
-
-
-
-
-    public void printTaskMap() {
-        for (Map.Entry<Integer, Task> entry : taskMap.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
+    public static void printMenu() {
+        System.out.println("1. Добавить задачу\n2. Удалить задачу\n3. Получить задачу на указанный день\n" +
+                "4. Получить удаленные задачи\n5. Изменить описание задачи\n6. Изменить заголовок задачи\n" +
+                "7. Получить все задачи, сгруппированные по датам\n0. Выход");
     }
-
-    public void printCollection(Collection<?> collection) {
-        System.out.println(collection);
-    }
-
-
-
 
 }

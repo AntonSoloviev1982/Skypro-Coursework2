@@ -1,31 +1,52 @@
 package test;
 
-import model.RepeatabilityEnum;
-import model.TypeEnum;
+
 import service.TaskService;
 
 import java.time.LocalDate;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-
         TaskService service = new TaskService();
-        service.add(RepeatabilityEnum.ОДНОКРАТНАЯ, TypeEnum.ЛИЧНЫЕ);
-        service.add(RepeatabilityEnum.ЕЖЕДНЕВНАЯ, TypeEnum.ЛИЧНЫЕ);
-        service.add(RepeatabilityEnum.ЕЖЕНЕДЕЛЬНАЯ, TypeEnum.РАБОЧИЕ);
-        service.add(RepeatabilityEnum.ЕЖЕМЕСЯЧНАЯ, TypeEnum.РАБОЧИЕ);
+        try (Scanner scanner = new Scanner(System.in)) {
+            label:
+            while (true) {
+                service.printMenu();
+                System.out.print("Выберите пункт меню: ");
+                if (scanner.hasNextLine()) {
+                    int menu = scanner.nextInt();
+                    switch (menu) {
+                        case 1:
+                            service.add(scanner);
+                            break;
+                        case 2:
+                            service.remove(scanner);
+                            break;
+                        case 3:
+                            service.getAllByDay(LocalDate.of(2023,4,22));
+                            break;
+                        case 4:
+                            service.getRemovedTasks();
+                            break;
+                        case 5:
+                            service.updateDescription(scanner);
+                            break;
+                        case 6:
+                            service.updateTitle(scanner);
+                            break;
+                        case 7:
+                            service.getAllGroupByData();
+                            break;
+                        case 0:
+                            break label;
+                    }
+                } else {
+                    scanner.next();
+                    System.out.println("Выберите пункт меню из списка!");
+                }
+            }
+        }
 
-        service.printTaskMap();
-
-        System.out.println("getAllByData" + service.getAllByData(LocalDate.of(2023, 5, 2)));
-
-        service.updateTitle(1);
-        service.updateDescription(1);
-
-        service.remove(2);
-
-        service.printCollection(service.getRemovedTasks());
-
-        service.getAllGroupByData();
     }
 }

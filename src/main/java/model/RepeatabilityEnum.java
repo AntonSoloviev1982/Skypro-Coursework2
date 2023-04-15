@@ -1,10 +1,10 @@
 package model;
 
 public enum RepeatabilityEnum {
-    ОДНОКРАТНАЯ,
-    ЕЖЕДНЕВНАЯ,
-    ЕЖЕНЕДЕЛЬНАЯ,
-    ЕЖЕМЕСЯЧНАЯ,
-    ЕЖЕГОДНАЯ;
+    ONETIME,
+    DAILY,
+    WEEKLY,
+    MONTHLY,
+    YEARLY;
 
 }

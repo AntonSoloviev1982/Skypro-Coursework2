@@ -1,6 +1,6 @@
 package model;
 
 public enum TypeEnum {
-    ЛИЧНЫЕ,
-    РАБОЧИЕ;
+    PERSONAL,
+    WORK;
 }
