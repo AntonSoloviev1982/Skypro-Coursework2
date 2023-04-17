@@ -3,7 +3,6 @@ package test;
 
 import service.TaskService;
 
-import java.time.LocalDate;
 import java.util.Scanner;
 
 public class Main {
@@ -24,7 +23,7 @@ public class Main {
                             service.remove(scanner);
                             break;
                         case 3:
-                            service.getAllByDay(LocalDate.of(2023,4,22));
+                            service.getAllByDay(scanner);
                             break;
                         case 4:
                             service.getRemovedTasks();

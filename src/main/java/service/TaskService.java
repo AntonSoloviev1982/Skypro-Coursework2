@@ -1,10 +1,13 @@
 package service;
 
+import exception.IncorrectArgumentException;
 import exception.TaskNotFoundException;
 import model.*;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Pattern;
 
 
 public class TaskService {
@@ -56,10 +59,7 @@ public class TaskService {
         System.out.println("Была удалена задача c id: " + id);
     }
 
-    public Set<Task> getAllByDay(LocalDate localDate) {
-        System.out.println("Введите дату в формате YYYY-MM-DD");
-//        String date = scanner.next();
-//        LocalDate localDate = LocalDate.parse(date);
+    public Set<Task> checkAllTasksByDay(LocalDate localDate) {
         Set<Task> tasks = new HashSet<>();
         for (Task task : taskMap.values()) {
             switch (task.getRepeatability()) {
@@ -93,14 +93,26 @@ public class TaskService {
                         tasks.add(task);
                     }
                     break;
-
             }
         }
         if (tasks.isEmpty()) {
             throw new TaskNotFoundException("На " + localDate + " задач не запланировано!");
         }
-        System.out.println("На " + localDate + " запланированы задачи: \n" + tasks);
         return tasks;
+    }
+
+    public void getAllByDay(Scanner scanner) {
+        Pattern DATE_PATTERN = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+        DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        System.out.println("Введите дату в формате dd.MM.yyyy");
+        if (scanner.hasNext(DATE_PATTERN)) {
+            String date = scanner.next();
+            LocalDate localDate = LocalDate.parse(date, DATE_FORMATTER);
+            Set<Task> tasks = checkAllTasksByDay(localDate);
+            System.out.println("На " + localDate + " запланированы задачи: \n" + tasks);
+        } else {
+            throw new IncorrectArgumentException("Не правильный формат даты");
+        }
     }
 
 
@@ -140,7 +152,7 @@ public class TaskService {
         LocalDate endDate = LocalDate.of(2023, 12, 31);
             for (int i = 0; i < endDate.getDayOfYear() - startDate.getDayOfYear(); i++) {
                 try {
-                    allTasksByData = getAllByDay(startDate.plusDays(i));
+                    allTasksByData = checkAllTasksByDay(startDate.plusDays(i));
                 } catch (TaskNotFoundException e) {
                     continue;
                 }
